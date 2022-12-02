@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>VIDI Player</title>
+    <script src="index.js"></script>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            background-color: rgb(0, 0, 0);
+            font-family: sans-serif;
+            height: 100%;
+            width: 100%;
+        }
+
+        h1, h2, p {
+            margin: 0;
+            padding-top: 20px;
+        }
+
+        .form-group {
+            padding: 0 0 10px 0;
+        }
+
+        .input {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid rgba(0, 0, 0, 0.5);
+            width: 100%;
+            margin: 0;
+            box-shadow: 1px 1px 4px inset rgba(0, 0, 0, 0.3);
+            box-sizing: border-box;
+        }
+
+        #player {
+            width: auto;
+            min-height: 100%;
+        }
+
+        #vidiSetup {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 400px;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .visible {
+            display: block;
+        }
+    </style>
+</head>
+<body id="body">
+<video autoplay id="player">
+    <source src="" type="video/mp4" id="source">
+</video>
+
+<!-- setup modal -->
+<div class="hidden" id="vidiSetup">
+    <div>
+        <h1>VIDI setup</h1>
+        <h2>Controls</h2>
+        <hr/>
+        <div class="form-group">
+            <p>
+                P = Play/Pause video<br/>
+                N = Play next video<br/>
+                S = Setup screen On/Off<br/>
+                L = Loop & Hold video On/Off<br/>
+                0 to 9 = Video Speed (0 still, 9 fastest)<br/>
+                Shift > = Increase choke (Max 16)<br/>
+                Shift < = Decrease choke (Min 0 = Off)
+            </p>
+        </div>
+        <h2>Video setting</h2>
+        <hr/>
+        <div class="form-group">
+            <label for="fileDirectory">Select a folder. MP4 only.</label>
+        </div>
+        <div class="form-group">
+            <input type="file" accept="video/mp4" id="fileDirectory" webkitdirectory>
+        </div>
+        <h2>MIDI settings</h2>
+        <hr/>
+        <div class="form-group">
+            <label for="midiInputDevices">MIDI input</label>
+        </div>
+        <div class="form-group">
+            <select class="input" id="midiInputDevices">
+                <option value="false">-- NONE --</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="midiInputChannel">MIDI input channel</label>
+        </div>
+        <div class="form-group">
+            <select class="input" id="midiInputChannel">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+                <option value="13">13</option>
+                <option value="14">14</option>
+                <option value="15">15</option>
+                <option value="16">16</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="choke">Choke (0 = off, Max 16)</label>
+        </div>
+        <div class="form-group">
+            <input type="number" name="choke" id="choke" value="0" class="input" min="0" max="16">
+        </div>
+    </div>
+</div>
+<script src="vidi_controls.js"></script>
+</body>
+</html>
