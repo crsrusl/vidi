@@ -15,6 +15,9 @@ let config = {
     selectedMidiChannel: 1,
     choke: 0,
     chokePosition: 0,
+    clockMode: false,
+    clockDivision: 24,
+    clockPosition: 0
 }
 
 /**
@@ -26,6 +29,7 @@ const midiInputDevicesSelect = document.getElementById("midiInputDevices");
 const midiInputChannelSelect = document.getElementById("midiInputChannel");
 const chokeInput = document.getElementById("choke");
 const fileDirectoryInput = document.getElementById("fileDirectory");
+const midiClockInput = document.getElementById("midiClockMode");
 
 function showHideSetupModal() {
     if (vidiSetup.classList.contains('visible')) {
@@ -50,6 +54,14 @@ fileDirectoryInput.addEventListener("change", function (el) {
 
 midiInputDevicesSelect.addEventListener("change", function (el) {
     config.selectedMidiInput = el.target.value;
+});
+
+midiClockInput.addEventListener("change", function (el) {
+    if (el.target.value === "true") {
+        config.clockMode = true;
+    } else {
+        config.clockMode = false;
+    }
 });
 
 midiInputChannelSelect.addEventListener("change", function (el) {
@@ -98,6 +110,10 @@ body.addEventListener('keyup', function (e) {
             changeChoke(-1)
             break;
         }
+        case 't': {
+            resetClockPosition()
+            break
+        }
     }
 });
 
@@ -110,6 +126,10 @@ const source = document.getElementById('source');
 
 function playPause() {
     video.playing ? video.pause() : video.play();
+}
+
+function resetClockPosition() {
+    config.clockPosition = 0;
 }
 
 function changeChoke(num) {
@@ -158,21 +178,13 @@ function getRandomVideo() {
  * MIDI stuff
  */
 
-function generatePacket(msg) {
-    if (msg.currentTarget.id !== config.selectedMidiInput) return;
-
-    let packet = {
-        cmd: msg.data[0] >> 4,
-        channel: msg.data[0] & 0xf,
-        noteNumber: msg.data[1],
-        velocity: msg.data[2]
-    };
-
+function midiHandler(packet) {
     // ignore midi clock
     if (packet.cmd === 15) return;
     // ignore note off
     if (packet.cmd === 8) return;
     // ignore wrong channel
+
 
     if (!isNaN(packet.channel)) packet.channel++;
     if (packet.channel !== config.selectedMidiChannel) return;
@@ -190,7 +202,36 @@ function generatePacket(msg) {
         config.chokePosition++;
         if (config.chokePosition >= config.choke) config.chokePosition = 0;
     }
+}
 
+function midiHandlerClockMode(packet) {
+    if (packet.cmd !== 15) return;
+
+    if (config.clockPosition === 0) {
+        config.clockPosition++;
+        loadNewVideo();
+    } else if (config.clockPosition >= config.clockDivision) {
+        config.clockPosition = 0;
+    } else {
+        config.clockPosition++;
+    }
+}
+
+function generatePacket(msg) {
+    if (msg.currentTarget.id !== config.selectedMidiInput) return;
+
+    let packet = {
+        cmd: msg.data[0] >> 4,
+        channel: msg.data[0] & 0xf,
+        noteNumber: msg.data[1],
+        velocity: msg.data[2]
+    };
+
+    if (config.clockMode === true) {
+        midiHandlerClockMode(packet)
+    } else {
+        midiHandler(packet);
+    }
 }
 
 navigator.requestMIDIAccess().then(function (access) {
@@ -199,7 +240,6 @@ navigator.requestMIDIAccess().then(function (access) {
 
         input.onmidimessage = generatePacket;
     });
-
 
     for (let i = 0; i < config.midiInputs.length; i++) {
         let option = document.createElement("option");
