@@ -131,11 +131,21 @@
                 <option value="true">Yes</option>
             </select>
         </div>
-        <div class="form-group">
-            <label for="choke">Choke (0 = off, Max 16)</label>
+        <div id="chokeSettingsGroup" class="">
+            <div class="form-group">
+                <label for="choke">Choke (0 = off, Max 16)</label>
+            </div>
+            <div class="form-group">
+                <input type="number" name="choke" id="choke" value="0" class="input" min="0" max="16">
+            </div>
         </div>
-        <div class="form-group">
-            <input type="number" name="choke" id="choke" value="0" class="input" min="0" max="16">
+        <div id="clockSettingGroup" class="hidden">
+            <div class="form-group">
+                <label for="clockDivision">Clock Divider (1 = off, Max 16)</label>
+            </div>
+            <div class="form-group">
+                <input type="number" name="clock" id="clockDivision" value="1" class="input" min="1" max="16">
+            </div>
         </div>
     </div>
 </div>

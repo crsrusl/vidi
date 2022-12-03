@@ -16,8 +16,9 @@ let config = {
     choke: 0,
     chokePosition: 0,
     clockMode: false,
-    clockDivision: 24,
-    clockPosition: 0
+    clockPPQN: 25,
+    clockPosition: 0,
+    clockDivision: 1
 }
 
 /**
@@ -28,8 +29,32 @@ const vidiSetup = document.getElementById('vidiSetup');
 const midiInputDevicesSelect = document.getElementById("midiInputDevices");
 const midiInputChannelSelect = document.getElementById("midiInputChannel");
 const chokeInput = document.getElementById("choke");
+const clockDivisionInput = document.getElementById("clockDivision");
 const fileDirectoryInput = document.getElementById("fileDirectory");
 const midiClockInput = document.getElementById("midiClockMode");
+const chokeSettingsGroup = document.getElementById("chokeSettingsGroup");
+const clockSettingsGroup = document.getElementById("clockSettingGroup");
+
+midiClockInput.addEventListener("change", function (el) {
+    const clockSettingsGroupClassList = clockSettingsGroup.classList;
+    const chokeSettingsGroupClassList = chokeSettingsGroup.classList;
+
+    if (el.target.value === "true") {
+        config.clockMode = true;
+
+        clockSettingsGroupClassList.contains('hidden') ? clockSettingsGroupClassList.remove('hidden') : null;
+        chokeSettingsGroupClassList.add('hidden');
+    } else {
+        config.clockMode = false;
+
+        chokeSettingsGroupClassList.contains('hidden') ? chokeSettingsGroupClassList.remove('hidden') : null;
+        clockSettingsGroupClassList.add('hidden');
+    }
+});
+
+clockDivisionInput.addEventListener('change', function (el) {
+    config.clockDivision = el.target.value;
+});
 
 function showHideSetupModal() {
     if (vidiSetup.classList.contains('visible')) {
@@ -54,14 +79,6 @@ fileDirectoryInput.addEventListener("change", function (el) {
 
 midiInputDevicesSelect.addEventListener("change", function (el) {
     config.selectedMidiInput = el.target.value;
-});
-
-midiClockInput.addEventListener("change", function (el) {
-    if (el.target.value === "true") {
-        config.clockMode = true;
-    } else {
-        config.clockMode = false;
-    }
 });
 
 midiInputChannelSelect.addEventListener("change", function (el) {
@@ -185,7 +202,6 @@ function midiHandler(packet) {
     if (packet.cmd === 8) return;
     // ignore wrong channel
 
-
     if (!isNaN(packet.channel)) packet.channel++;
     if (packet.channel !== config.selectedMidiChannel) return;
 
@@ -210,7 +226,7 @@ function midiHandlerClockMode(packet) {
     if (config.clockPosition === 0) {
         config.clockPosition++;
         loadNewVideo();
-    } else if (config.clockPosition >= config.clockDivision) {
+    } else if (config.clockPosition >= (config.clockPPQN * config.clockDivision)) {
         config.clockPosition = 0;
     } else {
         config.clockPosition++;
