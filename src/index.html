@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>VIDI Player</title>
-    <script src="index.js"></script>
     <style>
         html, body {
             margin: 0;
@@ -52,10 +51,6 @@
         .hidden {
             display: none;
         }
-
-        .visible {
-            display: block;
-        }
     </style>
 </head>
 <body id="body">
@@ -64,7 +59,7 @@
 </video>
 
 <!-- setup modal -->
-<div class="hidden" id="vidiSetup">
+<div class="" id="vidiSetup">
     <div>
         <h1>VIDI setup</h1>
         <h2>Controls</h2>
@@ -79,6 +74,8 @@
                 0 to 9 = Video Speed (0 still, 9 fastest)<br/>
                 Shift > = Increase choke (Max 16)<br/>
                 Shift < = Decrease choke (Min 0 = Off)<br/>
+                ] = Increase pattern size<br/>
+                [ = Decrease pattern size<br/>
                 G = Toggle group video in pattern (Default 4)<br/>
             </p>
         </div>
@@ -169,6 +166,7 @@
         </div>
     </div>
 </div>
+<script src="index.js"></script>
 <script src="vidi_controls.js"></script>
 </body>
 </html>

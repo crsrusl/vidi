@@ -108,14 +108,18 @@ midiClockInput.addEventListener("change", function (el) {
 });
 
 clockDivisionInput.addEventListener('change', function (el) {
+    const clockDivision = el.target.value;
+
+    if (clockDivision < 1 || clockDivision > 16) return;
+
     config.clockDivision = el.target.value;
 });
 
 function showHideSetupModal() {
-    if (vidiSetup.classList.contains('visible')) {
-        vidiSetup.classList.remove('visible');
+    if (vidiSetup.classList.contains('hidden')) {
+        vidiSetup.classList.remove('hidden');
     } else {
-        vidiSetup.classList.add('visible');
+        vidiSetup.classList.add('hidden');
     }
 }
 
@@ -269,7 +273,7 @@ video.addEventListener('loadstart', function () {
 });
 
 video.addEventListener('ended', function () {
-    if (config.patternMode === false) return;
+    if (config.patternMode === true) return;
     loadNewVideo();
 });
 
@@ -351,7 +355,6 @@ navigator.requestMIDIAccess().then(function (access) {
     }
 });
 
-
 /**
  * Helpers
  */
@@ -360,3 +363,7 @@ Object.defineProperty(HTMLMediaElement.prototype, 'playing', {
         return !!(this.currentTime > 0 && !this.paused && !this.ended && this.readyState > 2);
     }
 });
+
+/**
+ * On start
+ */
