@@ -1,7 +1,6 @@
 /**
  * Config
  */
-// Create list of video assets
 
 let config = {
     videos: [],
@@ -24,12 +23,12 @@ let config = {
 }
 
 /**
- * Interface stuff
+ * Interface
  */
 const body = document.getElementById('body');
 const vidiSetup = document.getElementById('vidiSetup');
-const midiInputDevicesSelect = document.getElementById("midiInputDevices");
-const midiInputChannelSelect = document.getElementById("midiInputChannel");
+const midiDeviceInput = document.getElementById("midiDeviceInput");
+const midiChannelInput = document.getElementById("midiInputChannel");
 const chokeInput = document.getElementById("choke");
 const clockDivisionInput = document.getElementById("clockDivision");
 const fileDirectoryInput = document.getElementById("fileDirectory");
@@ -40,8 +39,9 @@ const patternModeSetting = document.getElementById("patternModeSetting");
 const patternSettingGroup = document.getElementById("patternSettingGroup");
 const patternLengthSetting = document.getElementById('patternLengthSetting');
 
-patternModeSetting.addEventListener('change', patternModeSettingChange);
-
+/**
+ * Listener functions
+ */
 function patternModeSettingChange() {
     if (config.patternMode === false) {
         config.patternMode = true;
@@ -55,10 +55,10 @@ function patternModeSettingChange() {
     updatePatternModeComponent();
 }
 
-patternLengthSetting.addEventListener("change", function () {
+function patternLengthChange() {
     config.patternLength = patternLengthSetting.value;
     createPattern();
-});
+}
 
 function patternLengthSettingChange(num) {
     let newPatternLength = config.patternLength + num;
@@ -90,7 +90,7 @@ function createPattern() {
     }
 }
 
-midiClockInput.addEventListener("change", function (el) {
+function midiClockInputChange(el) {
     const clockSettingsGroupClassList = clockSettingsGroup.classList;
     const chokeSettingsGroupClassList = chokeSettingsGroup.classList;
 
@@ -105,15 +105,15 @@ midiClockInput.addEventListener("change", function (el) {
         chokeSettingsGroupClassList.contains('hidden') ? chokeSettingsGroupClassList.remove('hidden') : null;
         clockSettingsGroupClassList.add('hidden');
     }
-});
+}
 
-clockDivisionInput.addEventListener('change', function (el) {
+function clockDivisionInputChange(el) {
     const clockDivision = el.target.value;
 
     if (clockDivision < 1 || clockDivision > 16) return;
 
     config.clockDivision = el.target.value;
-});
+}
 
 function showHideSetupModal() {
     if (vidiSetup.classList.contains('hidden')) {
@@ -123,7 +123,7 @@ function showHideSetupModal() {
     }
 }
 
-fileDirectoryInput.addEventListener("change", function (el) {
+function fileDirectoryInputChange(el) {
     const files = el.target.files;
 
     Object.entries(files).forEach(([key, value]) => {
@@ -132,24 +132,40 @@ fileDirectoryInput.addEventListener("change", function (el) {
     });
 
     loadNewVideo();
-});
+}
 
-midiInputDevicesSelect.addEventListener("change", function (el) {
+function midiDeviceInputChange(el) {
     config.selectedMidiInput = el.target.value;
-});
+}
 
-midiInputChannelSelect.addEventListener("change", function (el) {
+function midiChannelInputChange(el) {
     config.selectedMidiChannel = parseInt(el.target.value);
-});
+}
 
-chokeInput.addEventListener("change", function (el) {
+function chokeInputChange(el) {
     config.choke = parseInt(el.target.value);
     config.chokePosition = 0;
-});
+}
 
 function updateChokeComponent() {
     chokeInput.value = config.choke;
 }
+
+/**
+ * Listeners
+ */
+patternModeSetting.addEventListener('change', patternModeSettingChange);
+patternLengthSetting.addEventListener('change', patternLengthChange);
+midiClockInput.addEventListener("change", midiClockInputChange);
+clockDivisionInput.addEventListener('change', clockDivisionInputChange);
+fileDirectoryInput.addEventListener("change", fileDirectoryInputChange);
+midiDeviceInput.addEventListener("change", midiDeviceInputChange);
+midiChannelInput.addEventListener("change", midiChannelInputChange);
+chokeInput.addEventListener("change", chokeInputChange);
+
+/**
+ * Shortcut keys
+ */
 
 body.addEventListener('keyup', function (e) {
     if (!isNaN(e.key)) {
@@ -351,7 +367,7 @@ navigator.requestMIDIAccess().then(function (access) {
         let option = document.createElement("option");
         option.innerText = config.midiInputs[i].name;
         option.value = config.midiInputs[i].id;
-        midiInputDevicesSelect.appendChild(option);
+        midiDeviceInput.appendChild(option);
     }
 });
 
@@ -363,7 +379,3 @@ Object.defineProperty(HTMLMediaElement.prototype, 'playing', {
         return !!(this.currentTime > 0 && !this.paused && !this.ended && this.readyState > 2);
     }
 });
-
-/**
- * On start
- */
