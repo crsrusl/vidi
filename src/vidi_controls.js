@@ -269,6 +269,7 @@ video.addEventListener('loadstart', function () {
 });
 
 video.addEventListener('ended', function () {
+    if (config.patternMode === false) return;
     loadNewVideo();
 });
 
@@ -358,12 +359,4 @@ Object.defineProperty(HTMLMediaElement.prototype, 'playing', {
     get: function () {
         return !!(this.currentTime > 0 && !this.paused && !this.ended && this.readyState > 2);
     }
-})
-
-// convert string bool to real bool
-function realBool(string) {
-    if (string === 'true') {
-        return true
-    }
-    return false;
-}
+});
