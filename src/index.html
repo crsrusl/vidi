@@ -78,7 +78,8 @@
                 T = Tap tempo (in MIDI clock mode)<br/>
                 0 to 9 = Video Speed (0 still, 9 fastest)<br/>
                 Shift > = Increase choke (Max 16)<br/>
-                Shift < = Decrease choke (Min 0 = Off)
+                Shift < = Decrease choke (Min 0 = Off)<br/>
+                G = Toggle group video in pattern (Default 4)<br/>
             </p>
         </div>
         <h2>Video setting</h2>
@@ -145,6 +146,25 @@
             </div>
             <div class="form-group">
                 <input type="number" name="clock" id="clockDivision" value="1" class="input" min="1" max="16">
+            </div>
+        </div>
+
+        <!-- Pattern mode -->
+        <div class="form-group">
+            <label for="patternModeSetting">Pattern mode?</label>
+        </div>
+        <div class="form-group">
+            <select class="input" id="patternModeSetting">
+                <option value="false">No</option>
+                <option value="true">Yes</option>
+            </select>
+        </div>
+        <div id="patternSettingGroup" class="hidden">
+            <div class="form-group">
+                <label for="patternLengthSetting">Pattern length (Min 1, Max 16)</label>
+            </div>
+            <div class="form-group">
+                <input type="number" name="patternLength" id="patternLengthSetting" value="4" class="input" min="1" max="16">
             </div>
         </div>
     </div>

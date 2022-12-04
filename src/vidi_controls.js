@@ -2,14 +2,16 @@
  * Config
  */
 // Create list of video assets
-let i = 1;
-let numVids = 0
-let videos = [];
 
 let config = {
+    videos: [],
+    patternList: [],
+    patternPosition: 0,
+    patternLength: 4,
+    patternMode: false,
     speed: 1,
     loop: false,
-    currentVideo: getRandomVideo(),
+    currentVideo: null,
     midiInputs: [],
     selectedMidiInput: null,
     selectedMidiChannel: 1,
@@ -34,6 +36,59 @@ const fileDirectoryInput = document.getElementById("fileDirectory");
 const midiClockInput = document.getElementById("midiClockMode");
 const chokeSettingsGroup = document.getElementById("chokeSettingsGroup");
 const clockSettingsGroup = document.getElementById("clockSettingGroup");
+const patternModeSetting = document.getElementById("patternModeSetting");
+const patternSettingGroup = document.getElementById("patternSettingGroup");
+const patternLengthSetting = document.getElementById('patternLengthSetting');
+
+patternModeSetting.addEventListener('change', patternModeSettingChange);
+
+function patternModeSettingChange() {
+    if (config.patternMode === false) {
+        config.patternMode = true;
+        patternModeSetting.value = 'true';
+        createPattern();
+    } else {
+        config.patternMode = false;
+        patternModeSetting.value = 'false';
+    }
+
+    updatePatternModeComponent();
+}
+
+patternLengthSetting.addEventListener("change", function () {
+    config.patternLength = patternLengthSetting.value;
+    createPattern();
+});
+
+function patternLengthSettingChange(num) {
+    let newPatternLength = config.patternLength + num;
+
+    if (newPatternLength <= 0 || newPatternLength > 16) return;
+
+    config.patternLength = newPatternLength;
+    patternLengthSetting.value = newPatternLength;
+
+    createPattern();
+}
+
+function updatePatternModeComponent() {
+    const patternSettingGroupClassList = patternSettingGroup.classList;
+
+    if (config.patternMode === true) {
+        patternSettingGroupClassList.remove('hidden');
+    } else {
+        patternSettingGroupClassList.add('hidden');
+    }
+}
+
+function createPattern() {
+    config.patternList = [];
+    const patternLength = config.patternLength;
+
+    for (let i = 0; i < patternLength; i++) {
+        config.patternList.push(getRandomVideo());
+    }
+}
 
 midiClockInput.addEventListener("change", function (el) {
     const clockSettingsGroupClassList = clockSettingsGroup.classList;
@@ -69,10 +124,8 @@ fileDirectoryInput.addEventListener("change", function (el) {
 
     Object.entries(files).forEach(([key, value]) => {
         if (value.type !== 'video/mp4') return;
-        videos.push(value.path);
+        config.videos.push(value.path);
     });
-
-    numVids = video.length;
 
     loadNewVideo();
 });
@@ -119,21 +172,36 @@ body.addEventListener('keyup', function (e) {
             loadNewVideo();
             break;
         }
+        // increase choke
         case '>': {
-            changeChoke(1)
+            changeChoke(1);
             break
         }
+        // decrease choke
         case '<': {
-            changeChoke(-1)
+            changeChoke(-1);
             break;
         }
         case 't': {
-            resetClockPosition()
-            break
+            resetClockPosition();
+            break;
+        }
+        case 'g': {
+            patternModeSettingChange();
+            break;
+        }
+        // increase pattern
+        case ']': {
+            patternLengthSettingChange(1)
+            break;
+        }
+        // decrease pattern
+        case '[': {
+            patternLengthSettingChange(-1)
+            break;
         }
     }
 });
-
 
 /**
  * Video stuff
@@ -158,6 +226,23 @@ function changeChoke(num) {
 }
 
 function loadNewVideo() {
+    if (config.patternMode === true) {
+        if (config.patternPosition >= config.patternList.length) {
+            config.patternPosition = 0;
+
+            config.currentVideo = config.patternList[config.patternPosition];
+            config.patternPosition++;
+        } else {
+            config.currentVideo = config.patternList[config.patternPosition];
+            config.patternPosition++;
+        }
+
+        source.setAttribute('src', config.currentVideo);
+        source.setAttribute('type', 'video/mp4');
+        video.load();
+        return;
+    }
+
     if (config.loop === true) return;
 
     let newVideo = getRandomVideo();
@@ -188,7 +273,7 @@ video.addEventListener('ended', function () {
 });
 
 function getRandomVideo() {
-    return videos[Math.floor(Math.random() * videos.length)];
+    return config.videos[Math.floor(Math.random() * config.videos.length)];
 }
 
 /**
@@ -274,3 +359,11 @@ Object.defineProperty(HTMLMediaElement.prototype, 'playing', {
         return !!(this.currentTime > 0 && !this.paused && !this.ended && this.readyState > 2);
     }
 })
+
+// convert string bool to real bool
+function realBool(string) {
+    if (string === 'true') {
+        return true
+    }
+    return false;
+}
